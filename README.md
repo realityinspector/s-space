@@ -4,6 +4,8 @@
 
 This repo is a place to work that idea out: name it, state its tenets, and build a way to measure it.
 
+> **Where it stands (2026-11-24): not found yet.** On a toy 32k-parameter Mamba-2, an automated search found a rank-32 subspace of the recurrent state, located with Jacobians. It is readable and causal, and it survives seed and model replication. But it adds only a little over the residual-stream J-lens (delta R 0.07–0.13). The S-space-specific ideas didn't show up: the Gramian basis, decay timescale and gating modulation had no effect. So far this is evidence that the model uses part of its state, not evidence for a distinct workspace. Details are under [First overnight run](#first-overnight-run-toy-model-only), and the next step is under [Next](#next).
+
 ---
 
 ## Background
@@ -161,6 +163,22 @@ What it suggests, as hypotheses for real models:
 4. **τ-as-coordinate and modulation are null knobs here.** Robust rates are the same with them on or off. That could mean the tasks never exercise timescale or gating structure, so it does not count as evidence against the "modular synth" view.
 5. **The Gramian, the instrument the theory favours, failed on causality.** It is the clearest tension with the spectral sketch above, worth checking at a scale where Ā is not close to diagonal.
 6. **The search saturated early.** It found no new leader after 00:30, and rounds 3–7 added only 10 robust patches. The next step is harder tasks or a real model, not more search.
+
+**Verdict: not S-space yet.** The model does have a readable, causal subspace in its state. But on a 2-layer model that solves every task perfectly, "a rank-32 causal subspace of the state" may just be the part of the state the model uses at all. The defining claim is that the state holds content the residual stream does not, and that claim gets only weak support (finding 3). The one instrument derived from the theory, the Gramian, failed (finding 5).
+
+## Next
+
+The question that settles it: **does delta R grow with scale and with the length of the gap the model must remember across?**
+
+- If delta R stays near 0.08, S-space is mostly the J-lens seen from a different angle.
+- If it grows, and the Gramian or decay-timescale knobs start to matter, there is a distinct S-space.
+
+To get there:
+
+1. **Real checkpoint.** Run the harness on a pretrained Mamba-2 (130M runs on CPU), with `state_hook` and `return_cache` adapted to its blocks.
+2. **Tasks the residual stream can't shortcut.** Use long gaps and multiple pieces of interfering information, so the answer has to live in `h`. Report delta R as a function of the gap length.
+3. **Retest the Gramian** where Ā is not close to diagonal, using Mamba-3's rotating dynamics, or using a trained model whose decay rates are spread out.
+4. **Hybrid.** Look for content moving from S-space into J-space around the attention layers.
 
 ## Status
 
