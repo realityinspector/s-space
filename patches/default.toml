@@ -1,0 +1,10 @@
+# baseline: raw state, SAE instrument, linear readout, one head of layer 0
+locus = "raw"
+instrument = "sae"
+phi = "linear"
+rank = 8
+granularity = "head"
+layer = 0
+tau_coord = false
+modulation = false
+seed = 0

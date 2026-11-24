@@ -1,0 +1,10 @@
+# control-theoretic: balanced-truncation modes of the whole recurrent state, with timescale coordinate
+locus = "raw"
+instrument = "gramian"
+phi = "linear"
+rank = 16
+granularity = "model"
+layer = -1
+tau_coord = true
+modulation = false
+seed = 0

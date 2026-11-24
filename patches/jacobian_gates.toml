@@ -1,0 +1,10 @@
+# output-sensitive subspace on gate features, modulation route + tau coordinate
+locus = "gates"
+instrument = "jacobian"
+phi = "lowrank"
+rank = 8
+granularity = "model"
+layer = -1
+tau_coord = true
+modulation = true
+seed = 1

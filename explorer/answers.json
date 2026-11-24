@@ -1,0 +1,56 @@
+{
+  "answers": {
+    "locus": {
+      "choice": null,
+      "synthesis": "it should be learning like \"autoresearch\" these are properties we would have to test not choices I can make today.",
+      "commentary": ""
+    },
+    "criterion": {
+      "choice": "all",
+      "synthesis": "",
+      "commentary": ""
+    },
+    "instrument": {
+      "choice": null,
+      "synthesis": "probably d but again \"autoresearch\" them persistently over time is the solution",
+      "commentary": ""
+    },
+    "direction": {
+      "choice": "balanced",
+      "synthesis": "",
+      "commentary": ""
+    },
+    "shape": {
+      "choice": "manifold",
+      "synthesis": "",
+      "commentary": "parameterize it "
+    },
+    "granularity": {
+      "choice": "model",
+      "synthesis": "we don't know yet  probably whole model? ",
+      "commentary": ""
+    },
+    "timescale": {
+      "choice": "continuous",
+      "synthesis": "",
+      "commentary": "hard t"
+    },
+    "content": {
+      "choice": null,
+      "synthesis": "would think of it more like a modular synthesizer that can modulate across variables and parameterize things like modulation ",
+      "commentary": ""
+    },
+    "arch": {
+      "choice": "staged",
+      "synthesis": "",
+      "commentary": ""
+    },
+    "falsify": {
+      "choice": null,
+      "synthesis": "that's like moog asking what songs can be written with a modular circuit board - we don't know yet but we should have strong evals, probably these",
+      "commentary": ""
+    }
+  },
+  "definition": "",
+  "updated": "2026-11-23T22:45:00.813Z"
+}

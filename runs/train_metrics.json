@@ -1,0 +1,12 @@
+{
+ "test_acc": {
+  "recall": 1.0,
+  "brackets": 1.0,
+  "count": 1.0,
+  "entity": 1.0,
+  "topic": 1.0
+ },
+ "steps": 2500,
+ "seconds": 185.47483491897583,
+ "params": 32024
+}

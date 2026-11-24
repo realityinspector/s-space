@@ -91,6 +91,77 @@ Choosing among these is the first real research question.
 - How does steering along S-space modes compare with steering J-space directions, and with bottleneck scaling?
 - Recovering content, keeping it over time, and redirecting the model are related but distinct (Wang & Reid). Which one should define S-space?
 
+## Autoresearch harness
+
+S-space is not defined by fiat here. Each open decision above (which part of the state, which instrument, which readout, which layer, ...) becomes a **knob**. A **patch** is one setting of all the knobs, like a patch on a modular synth. An automated search ("autoresearch") tries patches and keeps only those that beat strict controls.
+
+**Knobs** (see `sspace/patch.py`): `locus` (raw state, readout, gates, joint), `instrument` (SAE, Jacobian, covariance, probe, Gramian), `phi` (linear, low-rank, MLP readout), `rank`, `granularity` (head, layer, model), `layer`, `tau_coord`, `modulation`, `seed`.
+
+**Four scores**, all on held-out test data from a micro synthetic dataset:
+
+- **readable**: a readout from the S-space features predicts the per-position label (macro-average over 5 tasks).
+- **persistent**: the same, for the recall task at positions well after the key was written.
+- **causal**: swapping the S-space component of the state between two examples flips the model's answer.
+- **verbal**: the lens's readout agrees with what the model actually predicts.
+
+**Controls** (the falsifier). A patch passes only if it clears every one:
+
+1. untrained model: same patch on a randomly initialised model (readable +0.10)
+2. shuffled labels: same patch with training labels permuted within each task (readable +0.10)
+3. J-lens-only: same readout fitted on the residual stream alone; the joint state+residual readout must add at least 0.02 (delta R)
+4. held-out task: basis fitted on 4 tasks, read out on the 5th (ratio >= 0.8)
+5. random subspace (for causal): a random subspace of equal dimension must be beaten by +0.10
+
+The loop does a hill climb (1-2 knob mutations of the best patch, plus random restarts), logs every evaluation to `runs/ledger.jsonl`, and rewrites `runs/leaderboard.md` each iteration. Passing means "beats these controls on this micro dataset", nothing more.
+
+**Layout**
+
+- `sspace/`: `model.py` and `train.py` (tiny Mamba-2), `patch.py` and `eval.py` (patches and scoring), `loop.py` (search), `data.py` (loader), `CONTRACT.md` (interfaces)
+- `patches/`: patch settings as TOML (`default.toml`)
+- `runs/`: checkpoints, `train_metrics.json`, `eval_*.json`, `ledger.jsonl`, `leaderboard.md` (checkpoints and ledger are git-ignored)
+- `data/`: micro dataset and generator (`data/README.md`)
+- `explorer/`: local page for working through the design decisions
+
+**Quickstart**
+
+```
+make data       # generate the micro dataset
+make train      # train tiny model + untrained twin
+make eval       # score patches/default.toml with all controls
+make loop       # autoresearch for 30 minutes
+make fake-loop  # test the loop on a synthetic landscape (writes *.fake.* only)
+make explorer   # decision explorer
+```
+
+## First overnight run (toy model only)
+
+`make overnight` runs `sspace/overnight.py`. It searches the patch knobs and escalates each candidate:
+
+- **L1**: passes every control on the base model.
+- **L2**: also passes with fitting seeds 1 and 2.
+- **L3 ("robust")**: also passes on two independently trained models.
+
+The bar is stricter than the `make loop` defaults above, and it ratchets upward whenever robust patches become common:
+
+| control | start | after round 1 |
+|---|--:|--:|
+| readable vs untrained | 0.20 | 0.23 |
+| readable vs shuffled | 0.30 | 0.33 |
+| delta R | 0.05 | 0.07 |
+| causal vs random | 0.25 | 0.30 |
+| held-out ratio | 0.90 | 0.915 |
+
+Night of 2026-11-23, 32k-parameter Mamba-2, micro dataset, CPU: **3,101 candidates and 3,523 evaluations with 0 errors. 43 are robust**, roughly 65% of the non-redundant patch space. See `runs/overnight/STATUS.md` and `journal.md`.
+
+What it suggests, as hypotheses for real models:
+
+1. **Readability is cheap, causality is not.** Every instrument reaches about 0.85 readability. The SAE, covariance and Gramian bases never beat a norm-matched random subspace on causal patching, across 1,847 tries. 41 of the 43 robust patches use the **Jacobian** instrument and the other 2 use a probe.
+2. **The S-space is whole-model or last-layer, and it is not small.** No head-level patch and no layer-0 patch passed. Rank 32 does better than rank 16, and ranks 4 and 8 never passed.
+3. **The added value over the J-lens is real but thin.** Delta R, the gain from reading the state on top of the residual stream, is the weakest control for most leaders. Its worst case across the 5 replicates runs from 0.074 to 0.125, against a bar of 0.07. The leader is `locus=raw instrument=jacobian phi=lowrank rank=32 granularity=model`, with readable 0.86, persistent 1.00, causal 0.64–0.92 against a random 0.00, and delta R 0.078–0.127.
+4. **τ-as-coordinate and modulation are null knobs here.** Robust rates are the same with them on or off. That could mean the tasks never exercise timescale or gating structure, so it does not count as evidence against the "modular synth" view.
+5. **The Gramian, the instrument the theory favours, failed on causality.** It is the clearest tension with the spectral sketch above, worth checking at a scale where Ā is not close to diagonal.
+6. **The search saturated early.** It found no new leader after 00:30, and rounds 3–7 added only 10 robust patches. The next step is harder tasks or a real model, not more search.
+
 ## Status
 
-These are ideas only. There is no code yet.
+The repo has a micro synthetic dataset, a tiny Mamba-2 (32k parameters, test accuracy 1.0 on all tasks, plus two replicate seeds), the patch/eval code with controls, a search loop, and an overnight escalating search with replication. The `--fake` loop mode runs on a synthetic landscape purely to test the machinery. There are **no results on real LLMs**, and the findings above hold only for this toy setting.

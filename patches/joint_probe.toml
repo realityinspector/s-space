@@ -1,0 +1,10 @@
+# supervised probe subspace on residual+state, mlp readout, layer-wise
+locus = "joint"
+instrument = "probe"
+phi = "mlp"
+rank = 16
+granularity = "layer"
+layer = -1
+tau_coord = false
+modulation = false
+seed = 0

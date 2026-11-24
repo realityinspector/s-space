@@ -1,0 +1,57 @@
+{
+ "seed": 0,
+ "vocab_size": 63,
+ "max_len": 32,
+ "splits": {
+  "train": {
+   "n": 1000,
+   "by_task": {
+    "recall": 200,
+    "brackets": 200,
+    "count": 200,
+    "entity": 200,
+    "topic": 200
+   },
+   "mean_len": 20.57,
+   "recall_by_band": {
+    "fast": 80,
+    "mid": 80,
+    "slow": 40
+   },
+   "target_majority_rate": {
+    "brackets": 0.195,
+    "count": 0.2,
+    "entity": 0.3,
+    "recall": 0.15,
+    "topic": 0.335
+   }
+  },
+  "test": {
+   "n": 250,
+   "by_task": {
+    "recall": 50,
+    "brackets": 50,
+    "count": 50,
+    "entity": 50,
+    "topic": 50
+   },
+   "mean_len": 20.42,
+   "recall_by_band": {
+    "fast": 20,
+    "mid": 20,
+    "slow": 10
+   },
+   "target_majority_rate": {
+    "brackets": 0.26,
+    "count": 0.2,
+    "entity": 0.28,
+    "recall": 0.2,
+    "topic": 0.34
+   }
+  }
+ },
+ "cf_pairs": {
+  "recall": 50,
+  "topic": 50
+ }
+}

@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.tmp
+.DS_Store
+runs/*.pt
+runs/ledger*.jsonl
+runs/eval_*.json
+runs/*.fake.*
+runs/models/
+runs/overnight/ledger.jsonl
+runs/overnight/run.log
+runs/overnight/state.json
